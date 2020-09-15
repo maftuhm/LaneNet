@@ -11,7 +11,7 @@ from tqdm import tqdm
 from config import *
 import dataset
 from model import LaneNet
-from utils.tensorboard import TensorBoard
+# from utils.tensorboard import TensorBoard
 from utils.transforms import *
 from utils.lr_scheduler import PolyLR
 from utils.postprocess import embedding_post_process
@@ -33,8 +33,9 @@ with open(os.path.join(exp_dir, "cfg.json")) as f:
     exp_cfg = json.load(f)
 resize_shape = tuple(exp_cfg['dataset']['resize_shape'])
 
-device = torch.device(exp_cfg['device'])
-tensorboard = TensorBoard(exp_dir)
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+# device = torch.device(exp_cfg['device'])
+# tensorboard = TensorBoard(exp_dir)
 
 # ------------ train data ------------
 # # CULane mean, std
@@ -48,18 +49,19 @@ transform_train = Compose(Resize(resize_shape), Darkness(5), Rotation(2),
 dataset_name = exp_cfg['dataset'].pop('dataset_name')
 Dataset_Type = getattr(dataset, dataset_name)
 train_dataset = Dataset_Type(Dataset_Path[dataset_name], "train", transform_train)
-train_loader = DataLoader(train_dataset, batch_size=exp_cfg['dataset']['batch_size'], shuffle=True, collate_fn=train_dataset.collate, num_workers=8)
+train_loader = DataLoader(train_dataset, batch_size=exp_cfg['dataset']['batch_size'], shuffle=True, collate_fn=train_dataset.collate, num_workers=1)
 
 # ------------ val data ------------
 transform_val = Compose(Resize(resize_shape), ToTensor(),
                         Normalize(mean=mean, std=std))
 val_dataset = Dataset_Type(Dataset_Path[dataset_name], "val", transform_val)
-val_loader = DataLoader(val_dataset, batch_size=8, collate_fn=val_dataset.collate, num_workers=4)
+val_loader = DataLoader(val_dataset, batch_size=exp_cfg['dataset']['batch_size'], collate_fn=val_dataset.collate, num_workers=1)
 
 # ------------ preparation ------------
-net = LaneNet(pretrained=True, **exp_cfg['model'])
+# net = LaneNet(pretrained=True, **exp_cfg['model'])
+net = LaneNet()
 net = net.to(device)
-net = torch.nn.DataParallel(net)
+# net = torch.nn.DataParallel(net)
 
 optimizer = optim.SGD(net.parameters(), **exp_cfg['optim'])
 lr_scheduler = PolyLR(optimizer, 0.9, exp_cfg['MAX_ITER'])
@@ -90,12 +92,12 @@ def train(epoch):
         dist_loss = output['dist_loss']
         reg_loss = output['reg_loss']
         loss = output['loss']
-        if isinstance(net, torch.nn.DataParallel):
-            seg_loss = seg_loss.sum()
-            var_loss = var_loss.sum()
-            dist_loss = dist_loss.sum()
-            reg_loss = reg_loss.sum()
-            loss = output['loss'].sum()
+        # if isinstance(net, torch.nn.DataParallel):
+        #     seg_loss = seg_loss.sum()
+        #     var_loss = var_loss.sum()
+        #     dist_loss = dist_loss.sum()
+        #     reg_loss = reg_loss.sum()
+        #     loss = output['loss'].sum()
 
         loss.backward()
         optimizer.step()
@@ -111,19 +113,20 @@ def train(epoch):
         progressbar.update(1)
 
         lr = optimizer.param_groups[0]['lr']
-        tensorboard.scalar_summary("train_loss", train_loss, epoch)
-        tensorboard.scalar_summary("train_loss_bin_seg", train_loss_bin_seg, epoch)
-        tensorboard.scalar_summary("train_loss_var", train_loss_var, epoch)
-        tensorboard.scalar_summary("train_loss_dist", train_loss_dist, epoch)
-        tensorboard.scalar_summary("train_loss_reg", train_loss_reg, epoch)
+        # tensorboard.scalar_summary("train_loss", train_loss, epoch)
+        # tensorboard.scalar_summary("train_loss_bin_seg", train_loss_bin_seg, epoch)
+        # tensorboard.scalar_summary("train_loss_var", train_loss_var, epoch)
+        # tensorboard.scalar_summary("train_loss_dist", train_loss_dist, epoch)
+        # tensorboard.scalar_summary("train_loss_reg", train_loss_reg, epoch)
 
     progressbar.close()
-    tensorboard.writer.flush()
+    # tensorboard.writer.flush()
 
     if epoch % 1 == 0:
         save_dict = {
             "epoch": epoch,
-            "net": net.module.state_dict() if isinstance(net, torch.nn.DataParallel) else net.state_dict(),
+            # "net": net.module.state_dict() if isinstance(net, torch.nn.DataParallel) else net.state_dict(),
+            "net": net.state_dict(),
             "optim": optimizer.state_dict(),
             "lr_scheduler": lr_scheduler.state_dict()
         }
@@ -160,12 +163,12 @@ def val(epoch):
             dist_loss = output['dist_loss']
             reg_loss = output['reg_loss']
             loss = output['loss']
-            if isinstance(net, torch.nn.DataParallel):
-                seg_loss = seg_loss.sum()
-                var_loss = var_loss.sum()
-                dist_loss = dist_loss.sum()
-                reg_loss = reg_loss.sum()
-                loss = output['loss'].sum()
+            # if isinstance(net, torch.nn.DataParallel):
+            #     seg_loss = seg_loss.sum()
+            #     var_loss = var_loss.sum()
+            #     dist_loss = dist_loss.sum()
+            #     reg_loss = reg_loss.sum()
+            #     loss = output['loss'].sum()
 
             # visualize validation every 5 frame, 50 frames in all
             gap_num = 5
@@ -200,7 +203,7 @@ def val(epoch):
                     display_imgs.append(img)
                     display_imgs.append(bin_seg_img)
 
-                tensorboard.image_summary("img_{}".format(batch_idx), display_imgs, epoch)
+                # tensorboard.image_summary("img_{}".format(batch_idx), display_imgs, epoch)
 
             val_loss += loss.item()
             val_loss_bin_seg += seg_loss.item()
@@ -212,12 +215,12 @@ def val(epoch):
             progressbar.update(1)
 
     progressbar.close()
-    tensorboard.scalar_summary("val_loss", val_loss, epoch)
-    tensorboard.scalar_summary("val_loss_bin_seg", val_loss_bin_seg, epoch)
-    tensorboard.scalar_summary("val_loss_var", val_loss_var, epoch)
-    tensorboard.scalar_summary("val_loss_dist", val_loss_dist, epoch)
-    tensorboard.scalar_summary("val_loss_reg", val_loss_reg, epoch)
-    tensorboard.writer.flush()
+    # tensorboard.scalar_summary("val_loss", val_loss, epoch)
+    # tensorboard.scalar_summary("val_loss_bin_seg", val_loss_bin_seg, epoch)
+    # tensorboard.scalar_summary("val_loss_var", val_loss_var, epoch)
+    # tensorboard.scalar_summary("val_loss_dist", val_loss_dist, epoch)
+    # tensorboard.scalar_summary("val_loss_reg", val_loss_reg, epoch)
+    # tensorboard.writer.flush()
 
     print("------------------------\n")
     if val_loss < best_val_loss:

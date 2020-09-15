@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-
+from tqdm import tqdm
 
 class Tusimple(Dataset):
     """
@@ -87,10 +87,13 @@ class Tusimple(Dataset):
                     for line in infile:
                         outfile.write(line)
 
+        print("genereting train label...")
         self._gen_label_for_json('train')
         print("train set is done")
+        print("genereting val label...")
         self._gen_label_for_json('val')
         print("val set is done")
+        print("genereting test label...")
         self._gen_label_for_json('test')
         print("test set is done")
 
