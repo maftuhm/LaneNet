@@ -49,13 +49,13 @@ transform_train = Compose(Resize(resize_shape), Darkness(5), Rotation(2),
 dataset_name = exp_cfg['dataset'].pop('dataset_name')
 Dataset_Type = getattr(dataset, dataset_name)
 train_dataset = Dataset_Type(Dataset_Path[dataset_name], "train", transform_train)
-train_loader = DataLoader(train_dataset, batch_size=exp_cfg['dataset']['batch_size'], shuffle=True, collate_fn=train_dataset.collate, num_workers=1)
+train_loader = DataLoader(train_dataset, batch_size=exp_cfg['dataset']['batch_size'], shuffle=True, collate_fn=train_dataset.collate, num_workers=2)
 
 # ------------ val data ------------
 transform_val = Compose(Resize(resize_shape), ToTensor(),
                         Normalize(mean=mean, std=std))
 val_dataset = Dataset_Type(Dataset_Path[dataset_name], "val", transform_val)
-val_loader = DataLoader(val_dataset, batch_size=exp_cfg['dataset']['batch_size'], collate_fn=val_dataset.collate, num_workers=1)
+val_loader = DataLoader(val_dataset, batch_size=exp_cfg['dataset']['batch_size'], collate_fn=val_dataset.collate, num_workers=2)
 
 # ------------ preparation ------------
 # net = LaneNet(pretrained=True, **exp_cfg['model'])
@@ -182,7 +182,7 @@ def val(epoch):
                 for b in range(len(img)):
                     img_name = sample['img_name'][b]
                     img = cv2.imread(img_name) # BGR
-                    img = cv2.resize(img, (800, 288))
+                    img = cv2.resize(img, resize_shape)
 
                     bin_seg_img = np.zeros_like(img)
                     bin_seg_img[bin_seg_pred[b]==1] = [0, 0, 255]

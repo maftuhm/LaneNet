@@ -1,1 +1,1 @@
-{ "dataset":{"resize_shape":[256,128],"dataset_name":"Tusimple","batch_size":8}, "device":"cuda:0", "model":{}, "optim":{"lr":0.01, "momentum":0.9}, "MAX_ITER":20000 }
+{ "dataset":{"resize_shape":[128, 256],"dataset_name":"Tusimple","batch_size":8}, "device":"cuda:0", "model":{}, "optim":{"lr":0.001, "momentum":0.9}, "MAX_ITER":20000 }
