@@ -228,6 +228,7 @@ def val(epoch):
         save_name = os.path.join(exp_dir, exp_dir.split('/')[-1] + '.pth')
         copy_name = os.path.join(exp_dir, exp_dir.split('/')[-1] + '_best.pth')
         shutil.copyfile(save_name, copy_name)
+        print("best model is saved: {}".format(copy_name))
 
 
 def main():
@@ -245,7 +246,7 @@ def main():
     else:
         start_epoch = 0
 
-    for epoch in range(start_epoch, 100):
+    for epoch in range(start_epoch, 200):
         train(epoch)
         if epoch % 2 == 0:
             print("\nValidation For Experiment: ", exp_dir)

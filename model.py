@@ -91,6 +91,7 @@ class LaneNet(nn.Module):
         else:
             var_loss = torch.tensor(0, dtype=img.dtype, device=img.device)
             dist_loss = torch.tensor(0, dtype=img.dtype, device=img.device)
+            reg_loss = torch.tensor(0, dtype=img.dtype, device=img.device)
             seg_loss = torch.tensor(0, dtype=img.dtype, device=img.device)
 
         loss = seg_loss * self.scale_seg + var_loss * self.scale_var + dist_loss * self.scale_dist
@@ -154,7 +155,7 @@ class LaneNet(nn.Module):
                 dist_loss = dist_loss + torch.sum(F.relu(-dist + self.delta_d)**2) / (num_lanes * (num_lanes-1)) / 2
 
             # reg_loss is not used in original paper
-            # reg_loss = reg_loss + torch.mean(torch.norm(centroid_mean, dim=1))
+            reg_loss = reg_loss + torch.mean(torch.norm(centroid_mean, dim=1))
 
         var_loss = var_loss / batch_size
         dist_loss = dist_loss / batch_size

@@ -9,7 +9,7 @@ from utils.postprocess import *
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--img_path", '-i', type=str, default="demo/demo.jpg", help="Path to demo img")
-    parser.add_argument("--weight_path", '-w', type=str, help="Path to model weights")
+    parser.add_argument("--weight_path", '-w', type=str, default="./experiments/exp0/exp0_best.pth", help="Path to model weights")
     parser.add_argument("--band_width", '-b', type=float, default=1.5, help="Value of delta_v")
     parser.add_argument("--visualize", '-v', action="store_true", default=False, help="Visualize the result")
     args = parser.parse_args()
