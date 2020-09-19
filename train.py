@@ -19,7 +19,7 @@ from utils.postprocess import embedding_post_process
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp_dir", type=str, default="./experiments/exp0")
+    parser.add_argument("--exp_dir", type=str, default="./experiments/exp1")
     parser.add_argument("--resume", "-r", action="store_true")
     args = parser.parse_args()
     return args
@@ -49,13 +49,13 @@ transform_train = Compose(Resize(resize_shape), Darkness(5), Rotation(2),
 dataset_name = exp_cfg['dataset'].pop('dataset_name')
 Dataset_Type = getattr(dataset, dataset_name)
 train_dataset = Dataset_Type(Dataset_Path[dataset_name], "train", transform_train)
-train_loader = DataLoader(train_dataset, batch_size=exp_cfg['dataset']['batch_size'], shuffle=True, collate_fn=train_dataset.collate, num_workers=2)
+train_loader = DataLoader(train_dataset, batch_size=exp_cfg['dataset']['batch_size'], shuffle=True, collate_fn=train_dataset.collate, num_workers=0, pin_memory=True)
 
 # ------------ val data ------------
 transform_val = Compose(Resize(resize_shape), ToTensor(),
                         Normalize(mean=mean, std=std))
 val_dataset = Dataset_Type(Dataset_Path[dataset_name], "val", transform_val)
-val_loader = DataLoader(val_dataset, batch_size=exp_cfg['dataset']['batch_size'], collate_fn=val_dataset.collate, num_workers=2)
+val_loader = DataLoader(val_dataset, batch_size=exp_cfg['dataset']['batch_size'], collate_fn=val_dataset.collate, num_workers=0, pin_memory=True)
 
 # ------------ preparation ------------
 # net = LaneNet(pretrained=True, **exp_cfg['model'])
@@ -109,7 +109,7 @@ def train(epoch):
         train_loss_var += var_loss.item()
         train_loss_dist += dist_loss.item()
         train_loss_reg += reg_loss.item()
-        progressbar.set_description("batch loss: {:.3f}".format(loss.item()))
+        progressbar.set_description("batch loss: {:.5f}".format(loss.item()))
         progressbar.update(1)
 
         lr = optimizer.param_groups[0]['lr']
@@ -121,6 +121,19 @@ def train(epoch):
 
     progressbar.close()
     # tensorboard.writer.flush()
+    print(
+        'Loss: {:.4f}|'
+        'Bin seg loss: {:.4f}|'
+        'Var loss: {:.4f}|'
+        'Dist loss: {:.4f}|'
+        'Reg loss: {:.4f}'.format(
+            train_loss,
+            train_loss_bin_seg,
+            train_loss_var,
+            train_loss_dist, 
+            train_loss_reg
+            )
+        )
 
     if epoch % 1 == 0:
         save_dict = {
@@ -133,8 +146,7 @@ def train(epoch):
         save_name = os.path.join(exp_dir, exp_dir.split('/')[-1] + '.pth')
         torch.save(save_dict, save_name)
         print("model is saved: {}".format(save_name))
-
-    print("------------------------\n")
+    print("------------------------")
 
 
 def val(epoch):
@@ -211,7 +223,7 @@ def val(epoch):
             val_loss_dist += dist_loss.item()
             val_loss_reg += reg_loss.item()
 
-            progressbar.set_description("batch loss: {:.3f}".format(loss.item()))
+            progressbar.set_description("batch loss: {:.5f}".format(loss.item()))
             progressbar.update(1)
 
     progressbar.close()
@@ -222,13 +234,27 @@ def val(epoch):
     # tensorboard.scalar_summary("val_loss_reg", val_loss_reg, epoch)
     # tensorboard.writer.flush()
 
-    print("------------------------\n")
+    print(
+        'Loss: {:.4f}|'
+        'Bin seg loss: {:.4f}|'
+        'Var loss: {:.4f}|'
+        'Dist loss: {:.4f}|'
+        'Reg loss: {:.4f}'.format(
+            val_loss,
+            val_loss_bin_seg,
+            val_loss_var,
+            val_loss_dist, 
+            val_loss_reg
+            )
+        )
+
     if val_loss < best_val_loss:
         best_val_loss = val_loss
         save_name = os.path.join(exp_dir, exp_dir.split('/')[-1] + '.pth')
         copy_name = os.path.join(exp_dir, exp_dir.split('/')[-1] + '_best.pth')
         shutil.copyfile(save_name, copy_name)
         print("best model is saved: {}".format(copy_name))
+    print("------------------------\n\n")
 
 
 def main():
@@ -242,7 +268,7 @@ def main():
         optimizer.load_state_dict(save_dict['optim'])
         lr_scheduler.load_state_dict(save_dict['lr_scheduler'])
         start_epoch = save_dict['epoch'] + 1
-        best_val_loss = save_dict.get("best_val_loss", 1e6)
+        best_val_loss = save_dict.get("best_val_loss", 15.2549) 
     else:
         start_epoch = 0
 
