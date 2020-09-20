@@ -14,9 +14,11 @@ class Tusimple(Dataset):
     val includes label_data_0531.json
     test includes test_label.json
     """
-    TRAIN_SET = ['label_data_0313.json', 'label_data_0601.json']
-    VAL_SET = ['label_data_0531.json']
-    TEST_SET = ['test_label.json']
+    # TRAIN_SET = ['label_data_0313.json', 'label_data_0601.json']
+    # VAL_SET = ['label_data_0531.json']
+    # TEST_SET = ['test_label.json']
+    TRAIN_SET = ['train_label_lanenet_20092020.json']
+    VAL_SET = ['val_label_lanenet_20092020.json']
 
     def __init__(self, path, image_set, transforms=None):
         super(Tusimple, self).__init__()
@@ -81,11 +83,11 @@ class Tusimple(Dataset):
                     for line in infile:
                         outfile.write(line)
 
-        with open(os.path.join(save_dir, "test.json"), "w") as outfile:
-            for json_name in self.TEST_SET:
-                with open(os.path.join(self.data_dir_path, json_name)) as infile:
-                    for line in infile:
-                        outfile.write(line)
+        # with open(os.path.join(save_dir, "test.json"), "w") as outfile:
+        #     for json_name in self.TEST_SET:
+        #         with open(os.path.join(self.data_dir_path, json_name)) as infile:
+        #             for line in infile:
+        #                 outfile.write(line)
 
         print("genereting train label...")
         self._gen_label_for_json('train')
@@ -93,9 +95,9 @@ class Tusimple(Dataset):
         print("genereting val label...")
         self._gen_label_for_json('val')
         print("val set is done")
-        print("genereting test label...")
-        self._gen_label_for_json('test')
-        print("test set is done")
+        # print("genereting test label...")
+        # self._gen_label_for_json('test')
+        # print("test set is done")
 
     def _gen_label_for_json(self, image_set):
         H, W = 720, 1280
