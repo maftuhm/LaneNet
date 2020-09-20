@@ -8,8 +8,8 @@ from utils.postprocess import *
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--img_path", '-i', type=str, default="C:/Users/uin/Documents/Maftuh Mashuri/Project/Tusimple_data/clips/0601/1494452389590241875/1.jpg", help="Path to demo img")
-    parser.add_argument("--weight_path", '-w', type=str, default="./experiments/exp1/exp1_best.pth", help="Path to model weights")
+    parser.add_argument("--img_path", '-i', type=str, default="C:/Users/uin/Documents/Maftuh Mashuri/Project/my_dataset/clips/12960/3.jpg", help="Path to demo img")
+    parser.add_argument("--weight_path", '-w', type=str, default="./experiments/exp2/exp2_best.pth", help="Path to model weights")
     parser.add_argument("--band_width", '-b', type=float, default=1.5, help="Value of delta_v")
     parser.add_argument("--visualize", '-v', action="store_true", default=False, help="Visualize the result")
     args = parser.parse_args()

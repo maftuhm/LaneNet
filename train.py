@@ -5,7 +5,9 @@ import shutil
 import time
 
 import torch.optim as optim
+import torchvision
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 from config import *
@@ -19,7 +21,7 @@ from utils.postprocess import embedding_post_process
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp_dir", type=str, default="./experiments/exp2")
+    parser.add_argument("--exp_dir", type=str, default="./experiments/exp3")
     parser.add_argument("--resume", "-r", action="store_true")
     args = parser.parse_args()
     return args
@@ -35,7 +37,7 @@ resize_shape = tuple(exp_cfg['dataset']['resize_shape'])
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 # device = torch.device(exp_cfg['device'])
-# tensorboard = TensorBoard(exp_dir)
+writer = SummaryWriter(exp_dir + '/log')
 
 # ------------ train data ------------
 # # CULane mean, std
@@ -113,14 +115,14 @@ def train(epoch):
         progressbar.update(1)
 
         lr = optimizer.param_groups[0]['lr']
-        # tensorboard.scalar_summary("train_loss", train_loss, epoch)
-        # tensorboard.scalar_summary("train_loss_bin_seg", train_loss_bin_seg, epoch)
-        # tensorboard.scalar_summary("train_loss_var", train_loss_var, epoch)
-        # tensorboard.scalar_summary("train_loss_dist", train_loss_dist, epoch)
-        # tensorboard.scalar_summary("train_loss_reg", train_loss_reg, epoch)
 
     progressbar.close()
-    # tensorboard.writer.flush()
+    writer.add_scalar("train_loss", train_loss, epoch)
+    writer.add_scalar("train_loss_bin_seg", train_loss_bin_seg, epoch)
+    writer.add_scalar("train_loss_var", train_loss_var, epoch)
+    writer.add_scalar("train_loss_dist", train_loss_dist, epoch)
+    writer.add_scalar("train_loss_reg", train_loss_reg, epoch)
+    writer.flush()
     print(
         'Loss: {:.4f}|'
         'Bin seg loss: {:.4f}|'
@@ -200,22 +202,23 @@ def val(epoch):
                     bin_seg_img[bin_seg_pred[b]==1] = [0, 0, 255]
 
                     # # ----------- cluster ---------------
-                    # seg_img = np.zeros_like(img)
-                    # embedding_b = np.transpose(embedding[b], (1, 2, 0))
-                    # lane_seg_img = embedding_post_process(embedding_b, bin_seg_pred[b], exp_cfg['net']['delta_v'])
-                    # embed_unique_idxs = np.unique(lane_seg_img)
-                    # embed_unique_idxs = embed_unique_idxs[embed_unique_idxs!=0]
-                    # for i, lane_idx in enumerate(embed_unique_idxs):
-                    #     seg_img[lane_seg_img==lane_idx] = color[i]
-                    # img = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=img, beta=1., gamma=0.)
+                    seg_img = np.zeros_like(img)
+                    embedding_b = np.transpose(embedding[b], (1, 2, 0))
+                    lane_seg_img = embedding_post_process(embedding_b, bin_seg_pred[b], exp_cfg['net']['delta_v'])
+                    embed_unique_idxs = np.unique(lane_seg_img)
+                    embed_unique_idxs = embed_unique_idxs[embed_unique_idxs!=0]
+                    for i, lane_idx in enumerate(embed_unique_idxs):
+                        seg_img[lane_seg_img==lane_idx] = color[i]
+                    img = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=img, beta=1., gamma=0.)
 
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                     bin_seg_img = cv2.cvtColor(bin_seg_img, cv2.COLOR_BGR2RGB)
 
                     display_imgs.append(img)
                     display_imgs.append(bin_seg_img)
-
-                # tensorboard.image_summary("img_{}".format(batch_idx), display_imgs, epoch)
+                display_imgs = np.asarray(display_imgs)
+                display_imgs = np.transpose(display_imgs, (0, 3, 1, 2))
+                writer.add_images("img_{}".format(batch_idx), display_imgs, epoch)
 
             val_loss += loss.item()
             val_loss_bin_seg += seg_loss.item()
@@ -227,12 +230,12 @@ def val(epoch):
             progressbar.update(1)
 
     progressbar.close()
-    # tensorboard.scalar_summary("val_loss", val_loss, epoch)
-    # tensorboard.scalar_summary("val_loss_bin_seg", val_loss_bin_seg, epoch)
-    # tensorboard.scalar_summary("val_loss_var", val_loss_var, epoch)
-    # tensorboard.scalar_summary("val_loss_dist", val_loss_dist, epoch)
-    # tensorboard.scalar_summary("val_loss_reg", val_loss_reg, epoch)
-    # tensorboard.writer.flush()
+    writer.add_scalar("val_loss", val_loss, epoch)
+    writer.add_scalar("val_loss_bin_seg", val_loss_bin_seg, epoch)
+    writer.add_scalar("val_loss_var", val_loss_var, epoch)
+    writer.add_scalar("val_loss_dist", val_loss_dist, epoch)
+    writer.add_scalar("val_loss_reg", val_loss_reg, epoch)
+    writer.flush()
 
     print(
         'Loss: {:.4f}|'
@@ -268,13 +271,13 @@ def main():
         optimizer.load_state_dict(save_dict['optim'])
         lr_scheduler.load_state_dict(save_dict['lr_scheduler'])
         start_epoch = save_dict['epoch'] + 1
-        best_val_loss = save_dict.get("best_val_loss", 15.2549) 
+        best_val_loss = save_dict.get("best_val_loss", 42.01) #my data exp2 41.6771 exp3 42.01
     else:
         start_epoch = 0
 
-    for epoch in range(start_epoch, 200):
+    for epoch in range(start_epoch, exp_cfg['NUM_EPOCH']):
         train(epoch)
-        if epoch % 2 == 0:
+        if epoch % 1 == 0:
             print("\nValidation For Experiment: ", exp_dir)
             print(time.strftime('%H:%M:%S', time.localtime()))
             val(epoch)
