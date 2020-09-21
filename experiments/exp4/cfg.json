@@ -1,0 +1,1 @@
+{ "dataset":{"resize_shape":[640, 360],"dataset_name":"Tusimple","batch_size":2}, "device":"cuda:0", "model":{}, "net":{"delta_v" : 1.5}, "optim":{"lr":0.001, "momentum":0.9}, "NUM_EPOCH":200, "MAX_ITER":20000 }

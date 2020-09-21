@@ -21,7 +21,7 @@ from utils.postprocess import embedding_post_process
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp_dir", type=str, default="./experiments/exp3")
+    parser.add_argument("--exp_dir", type=str, default="./experiments/exp4")
     parser.add_argument("--resume", "-r", action="store_true")
     args = parser.parse_args()
     return args
@@ -115,13 +115,49 @@ def train(epoch):
         progressbar.update(1)
 
         lr = optimizer.param_groups[0]['lr']
+        gap_num = 5
+        if batch_idx%gap_num == 0 and batch_idx < 50 * gap_num:
+                color = np.array([[255, 125, 0], [0, 255, 0], [0, 0, 255], [0, 255, 255]], dtype='uint8') # bgr
+                display_imgs = []
+                embedding = embedding.detach().cpu().numpy()
+                bin_seg_prob = binary_seg.detach().cpu().numpy()
+                bin_seg_pred = np.argmax(bin_seg_prob, axis=1)
+
+                for b in range(len(img)):
+                    img_name = sample['img_name'][b]
+                    img = cv2.imread(img_name) # BGR
+                    img = cv2.resize(img, resize_shape)
+
+                    bin_seg_img = np.zeros_like(img)
+                    bin_seg_img[bin_seg_pred[b]==1] = [0, 0, 255]
+
+                    # # ----------- cluster ---------------
+                    seg_img = np.zeros_like(img)
+                    embedding_b = np.transpose(embedding[b], (1, 2, 0))
+                    lane_seg_img = embedding_post_process(embedding_b, bin_seg_pred[b], exp_cfg['net']['delta_v'])
+                    embed_unique_idxs = np.unique(lane_seg_img)
+                    embed_unique_idxs = embed_unique_idxs[embed_unique_idxs!=0]
+                    for i, lane_idx in enumerate(embed_unique_idxs):
+                        seg_img[lane_seg_img==lane_idx] = color[i]
+                    img = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=img, beta=1., gamma=0.)
+
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    bin_seg_img = cv2.cvtColor(bin_seg_img, cv2.COLOR_BGR2RGB)
+
+                    display_imgs.append(img)
+                    display_imgs.append(bin_seg_img)
+                display_imgs = np.asarray(display_imgs)
+                display_imgs = np.transpose(display_imgs, (0, 3, 1, 2))
+                writer.add_images("Train/img_{}".format(batch_idx), display_imgs, epoch)
+
 
     progressbar.close()
-    writer.add_scalar("train_loss", train_loss, epoch)
-    writer.add_scalar("train_loss_bin_seg", train_loss_bin_seg, epoch)
-    writer.add_scalar("train_loss_var", train_loss_var, epoch)
-    writer.add_scalar("train_loss_dist", train_loss_dist, epoch)
-    writer.add_scalar("train_loss_reg", train_loss_reg, epoch)
+    writer.add_scalar("Train/loss", train_loss, epoch)
+    writer.add_scalar("Train/learning_rate", lr, epoch)
+    writer.add_scalars("Train/losses", {'loss_bin_seg':train_loss_bin_seg,
+                                        'loss_var':train_loss_var,
+                                        'loss_dist':train_loss_dist,
+                                        'loss_reg':train_loss_reg}, epoch)
     writer.flush()
     print(
         'Loss: {:.4f}|'
@@ -218,7 +254,7 @@ def val(epoch):
                     display_imgs.append(bin_seg_img)
                 display_imgs = np.asarray(display_imgs)
                 display_imgs = np.transpose(display_imgs, (0, 3, 1, 2))
-                writer.add_images("img_{}".format(batch_idx), display_imgs, epoch)
+                writer.add_images("Val/img_{}".format(batch_idx), display_imgs, epoch)
 
             val_loss += loss.item()
             val_loss_bin_seg += seg_loss.item()
@@ -230,11 +266,12 @@ def val(epoch):
             progressbar.update(1)
 
     progressbar.close()
-    writer.add_scalar("val_loss", val_loss, epoch)
-    writer.add_scalar("val_loss_bin_seg", val_loss_bin_seg, epoch)
-    writer.add_scalar("val_loss_var", val_loss_var, epoch)
-    writer.add_scalar("val_loss_dist", val_loss_dist, epoch)
-    writer.add_scalar("val_loss_reg", val_loss_reg, epoch)
+    writer.add_scalar("Val/val_loss", val_loss, epoch)
+    writer.add_scalars("Val/losses", {'loss_bin_seg': val_loss_bin_seg,
+                                    'loss_var': val_loss_var,
+                                    'loss_dist': val_loss_dist,
+                                    'loss_reg':val_loss_reg}, epoch)
+
     writer.flush()
 
     print(
@@ -271,7 +308,7 @@ def main():
         optimizer.load_state_dict(save_dict['optim'])
         lr_scheduler.load_state_dict(save_dict['lr_scheduler'])
         start_epoch = save_dict['epoch'] + 1
-        best_val_loss = save_dict.get("best_val_loss", 42.01) #my data exp2 41.6771 exp3 42.01
+        best_val_loss = save_dict.get("best_val_loss", 44.82) #my data exp2 41.6771 exp3 42.01 exp4 44.82
     else:
         start_epoch = 0
 
