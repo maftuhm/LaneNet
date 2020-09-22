@@ -13,6 +13,7 @@ class LaneNet(nn.Module):
             scale_lane_line=1.0,
             scale_var=1.0,
             scale_dist=1.0,
+            scale_reg=0.001,
             pretrained=False,
             **kwargs
     ):
@@ -27,7 +28,7 @@ class LaneNet(nn.Module):
         self.scale_seg = scale_lane_line
         self.scale_var = scale_var
         self.scale_dist = scale_dist
-        self.scale_reg = 0
+        self.scale_reg = scale_reg
         self.seg_loss = nn.CrossEntropyLoss(weight=torch.tensor([0.4, 1.]))
 
     def net_init(self):
@@ -94,7 +95,7 @@ class LaneNet(nn.Module):
             reg_loss = torch.tensor(0, dtype=img.dtype, device=img.device)
             seg_loss = torch.tensor(0, dtype=img.dtype, device=img.device)
 
-        loss = seg_loss * self.scale_seg + var_loss * self.scale_var + dist_loss * self.scale_dist
+        loss = seg_loss * self.scale_seg + var_loss * self.scale_var + dist_loss * self.scale_dist + reg_loss * self.scale_reg
 
         output = {
             "embedding": embedding,

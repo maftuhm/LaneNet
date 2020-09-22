@@ -21,7 +21,7 @@ from utils.postprocess import embedding_post_process
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp_dir", type=str, default="./experiments/exp6")
+    parser.add_argument("--exp_dir", type=str, default="./experiments/exp7")
     parser.add_argument("--resume", "-r", action="store_true")
     args = parser.parse_args()
     return args
@@ -60,13 +60,13 @@ val_dataset = Dataset_Type(Dataset_Path[dataset_name], "val", transform_val)
 val_loader = DataLoader(val_dataset, batch_size=exp_cfg['dataset']['batch_size'], collate_fn=val_dataset.collate, num_workers=0, pin_memory=True)
 
 # ------------ preparation ------------
-# net = LaneNet(pretrained=True, **exp_cfg['model'])
-net = LaneNet(pretrained=True)
+net = LaneNet(pretrained=True, **exp_cfg['net'])
+# net = LaneNet(pretrained=True)
 net = net.to(device)
 # net = torch.nn.DataParallel(net)
 
-optimizer = optim.SGD(net.parameters(), **exp_cfg['optim'])
-# optimizer = optim.Adam(net.parameters(), **exp_cfg['optim'])
+# optimizer = optim.SGD(net.parameters(), **exp_cfg['optim'])
+optimizer = optim.Adam(net.parameters(), **exp_cfg['optim'])
 lr_scheduler = PolyLR(optimizer, 0.9, exp_cfg['MAX_ITER'])
 best_val_loss = 1e6
 
@@ -309,7 +309,7 @@ def main():
         optimizer.load_state_dict(save_dict['optim'])
         lr_scheduler.load_state_dict(save_dict['lr_scheduler'])
         start_epoch = save_dict['epoch'] + 1
-        best_val_loss = save_dict.get("best_val_loss", 39.88) #my data exp2 41.6771 exp3 42.01 exp4 44.82
+        best_val_loss = save_dict.get("best_val_loss", 6.671) #my data exp2 41.6771 exp3 42.01 exp4 44.82
     else:
         start_epoch = 0
 

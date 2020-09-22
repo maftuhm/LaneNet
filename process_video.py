@@ -9,10 +9,10 @@ from tqdm import tqdm
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--video_path", '-i', type=str, default="D:/Data/data-projects-co-id/my_dataset/videos/data_projects_co_id_02.mp4", help="Path to demo img")
+    parser.add_argument("--video_path", '-i', type=str, default="C:/Users/uin/Documents/Maftuh Mashuri/Project/videos/data_projects_co_id_02.mp4", help="Path to demo img")
     parser.add_argument("--weight_path", '-w', type=str, default="./experiments/exp6/exp6_best.pth", help="Path to model weights")
     parser.add_argument("--band_width", '-b', type=float, default=1.5, help="Value of delta_v")
-    parser.add_argument("--output_path", '-o', action="store_true", default="D:/Data/data-projects-co-id/my_dataset/videos", help="Visualize the result")
+    parser.add_argument("--output_path", '-o', action="store_true", default="C:/Users/uin/Documents/Maftuh Mashuri/Project/videos", help="Visualize the result")
     args = parser.parse_args()
     return args
 
@@ -31,7 +31,7 @@ net = net.to(device)
 vidcap = cv2.VideoCapture(video_path)
 total_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
 size_video = (1920, 1080)
-out = cv2.VideoWriter(os.path.join(output_path,'output_video.avi'),cv2.VideoWriter_fourcc(*'DIVX'), 15, size_video)
+out = cv2.VideoWriter(os.path.join(output_path,'output_video.avi'),cv2.VideoWriter_fourcc(*'DIVX'), 30, size_video)
 
 _set = "IMAGENET"
 mean = IMG_MEAN[_set]
