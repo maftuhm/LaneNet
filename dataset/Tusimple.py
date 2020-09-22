@@ -100,7 +100,7 @@ class Tusimple(Dataset):
         # print("test set is done")
 
     def _gen_label_for_json(self, image_set):
-        H, W = 720, 1280
+        H, W = 1080, 1920
         SEG_WIDTH = 30
         save_dir = "seg_label"
 
