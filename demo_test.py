@@ -8,8 +8,8 @@ from utils.postprocess import *
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--img_path", '-i', type=str, default="C:/Users/uin/Documents/Maftuh Mashuri/Project/my_dataset/clips/12960/3.jpg", help="Path to demo img")
-    parser.add_argument("--weight_path", '-w', type=str, default="./experiments/exp2/exp2_best.pth", help="Path to model weights")
+    parser.add_argument("--img_path", '-i', type=str, default="D:/Data/data-projects-co-id/my_dataset/clips/60/3.jpg", help="Path to demo img")
+    parser.add_argument("--weight_path", '-w', type=str, default="./experiments/exp6/exp6_best.pth", help="Path to model weights")
     parser.add_argument("--band_width", '-b', type=float, default=1.5, help="Value of delta_v")
     parser.add_argument("--visualize", '-v', action="store_true", default=False, help="Visualize the result")
     args = parser.parse_args()
@@ -24,12 +24,13 @@ def main():
     _set = "IMAGENET"
     mean = IMG_MEAN[_set]
     std = IMG_STD[_set]
-    transform_img = Resize((512, 256))
+    transform_img = Resize((640, 360))
+    transform_img_ori = Resize((1920, 1080))
     transform_x = Compose(ToTensor(), Normalize(mean=mean, std=std))
     transform = Compose(transform_img, transform_x)
 
-    img = cv2.imread(img_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # RGB for net model input
+    img_ori = cv2.imread(img_path)
+    img = cv2.cvtColor(img_ori, cv2.COLOR_BGR2RGB) # RGB for net model input
     img = transform_img({'img': img})['img']
     x = transform_x({'img': img})['img']
     x.unsqueeze_(0)
@@ -63,12 +64,13 @@ def main():
     for lane_loc in lanes_loc:
         lanes_coordinates.append(list(zip(lane_loc[0], lane_loc[1])))
 
-    img = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=img, beta=1., gamma=0.)
+    seg_img = transform_img_ori({'img': seg_img})['img']
+    img_ori = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=img_ori, beta=1., gamma=0.)
 
-    cv2.imwrite("demo/demo_result.jpg", img)
+    cv2.imwrite("demo/demo_result.jpg", img_ori)
 
     if args.visualize:
-        cv2.imshow("", img)
+        cv2.imshow("", img_ori)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
