@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--video_path", '-i', type=str, default="C:/Users/uin/Documents/Maftuh Mashuri/Project/videos/data_projects_co_id_02.mp4", help="Path to demo img")
     parser.add_argument("--weight_path", '-w', type=str, default="./experiments/exp6/exp6_best.pth", help="Path to model weights")
-    parser.add_argument("--band_width", '-b', type=float, default=1.5, help="Value of delta_v")
+    parser.add_argument("--band_width", '-b', type=float, default=0.5, help="Value of delta_v")
     parser.add_argument("--output_path", '-o', action="store_true", default="C:/Users/uin/Documents/Maftuh Mashuri/Project/videos", help="Visualize the result")
     args = parser.parse_args()
     return args
