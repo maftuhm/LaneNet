@@ -21,7 +21,7 @@ from utils.postprocess import embedding_post_process
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp_dir", type=str, default="./experiments/exp10")
+    parser.add_argument("--exp_dir", type=str, default="./experiments/exp11")
     parser.add_argument("--resume", "-r", action="store_true")
     args = parser.parse_args()
     return args
@@ -292,7 +292,7 @@ def val(epoch):
     if val_loss < best_val_loss:
         best_val_loss = val_loss
         save_name = os.path.join(exp_dir, exp_dir.split('/')[-1] + '.pth')
-        copy_name = os.path.join(exp_dir, exp_dir.split('/')[-1] + '_best.pth')
+        copy_name = os.path.join(exp_dir, '{:.4f}'.format(val_loss) + '_' + exp_dir.split('/')[-1] + '_best.pth')
         shutil.copyfile(save_name, copy_name)
         print("best model is saved: {}".format(copy_name))
     print("------------------------\n\n")

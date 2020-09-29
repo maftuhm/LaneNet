@@ -1,1 +1,1 @@
-{ "dataset":{"resize_shape":[640, 360],"dataset_name":"Tusimple","batch_size":2}, "device":"cuda:0", "net":{"delta_v" : 0.5, "delta_v":0.5, "delta_d":3.0,"scale_lane_line":1.0,"scale_var":1.0,"scale_dist":1.0,"scale_reg":0.001}, "optim":{"lr":0.0005}, "NUM_EPOCH":100, "MAX_ITER":20000 }
+{ "dataset":{"resize_shape":[640, 360],"dataset_name":"Tusimple","batch_size":2}, "device":"cuda:0", "net":{"delta_v":0.5, "delta_d":3.0,"scale_lane_line":1.0,"scale_var":1.0,"scale_dist":1.0,"scale_reg":0.001}, "optim":{"lr":0.0005}, "NUM_EPOCH":100, "MAX_ITER":20000 }
