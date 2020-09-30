@@ -72,7 +72,7 @@ Berikutnya adalah melabeli dengan vgg anotator, dapat di download di "[VGG Image
 **Note**
 - Nama folder `My_dataset_path` boleh diganti apa saja sesuai keinginan/keperluan.
 
-### Konvert label.json ke format label tusimple
+### Konvert `label.json` ke format label tusimple
 
 ```
 Kode dan file python menyusul
@@ -122,7 +122,7 @@ Dataset_Path = dict(
    ```
    contoh
    ```python
-   python train.py --exp_dir ./experiments/exp12 -r
+   python train.py --exp_dir ./experiments/exp12
    ```
 
 4. Monitor on tensorboard:
