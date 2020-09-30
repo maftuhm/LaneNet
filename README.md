@@ -5,10 +5,11 @@ LaneNet is a segmentation-tasked lane detection algorithm, described in [1] "[To
 ## Packages & Softwares
 
 **Packages**
-- pytorch 1.5.1
-- opencv 3.4.2
-- scikit-learn 0.23.1
-- tensorboard 2.3.0
+- python 3.7
+- pytorch 1.5
+- opencv 3.4
+- scikit-learn 0.23
+- tensorboard 2.3
 
 **Software**
 - NVIDIA GPU drivers
