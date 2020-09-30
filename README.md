@@ -2,6 +2,18 @@
 
 LaneNet is a segmentation-tasked lane detection algorithm, described in [1] "[Towards end-to-end lane detection: an instance segmentation approach](https://arxiv.org/pdf/1802.05591.pdf)" . The key idea of instance segmentation should be referred to [2] "[Semantic instance segmentation with a discriminative loss function](https://arxiv.org/pdf/1708.02551.pdf)". This repository contains a re-implementation in Pytorch.
 
+## Packages & Softwares
+
+**Packages**
+- pytorch 1.5.1
+- opencv 3.4.2
+- scikit-learn 0.23.1
+- tensorboard 2.3.0
+**Software**
+- NVIDIA GPU drivers
+- CUDA Toolkit: CUDA 10.1
+- cuDNN SDK 7.6 >=
+
 ## Demo Test
 
 For single image demo test:
