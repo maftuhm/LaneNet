@@ -13,7 +13,6 @@ from tqdm import tqdm
 from config import *
 import dataset
 from model import LaneNet
-# from utils.tensorboard import TensorBoard
 from utils.transforms import *
 from utils.lr_scheduler import PolyLR
 from utils.postprocess import embedding_post_process
@@ -61,9 +60,7 @@ val_loader = DataLoader(val_dataset, batch_size=exp_cfg['dataset']['batch_size']
 
 # ------------ preparation ------------
 net = LaneNet(pretrained=True, **exp_cfg['net'])
-# net = LaneNet(pretrained=True)
 net = net.to(device)
-# net = torch.nn.DataParallel(net)
 
 # optimizer = optim.SGD(net.parameters(), **exp_cfg['optim'])
 optimizer = optim.Adam(net.parameters(), **exp_cfg['optim'])
@@ -95,12 +92,6 @@ def train(epoch):
         dist_loss = output['dist_loss']
         reg_loss = output['reg_loss']
         loss = output['loss']
-        # if isinstance(net, torch.nn.DataParallel):
-        #     seg_loss = seg_loss.sum()
-        #     var_loss = var_loss.sum()
-        #     dist_loss = dist_loss.sum()
-        #     reg_loss = reg_loss.sum()
-        #     loss = output['loss'].sum()
 
         loss.backward()
         optimizer.step()
@@ -177,7 +168,6 @@ def train(epoch):
     if epoch % 1 == 0:
         save_dict = {
             "epoch": epoch,
-            # "net": net.module.state_dict() if isinstance(net, torch.nn.DataParallel) else net.state_dict(),
             "net": net.state_dict(),
             "optim": optimizer.state_dict(),
             "lr_scheduler": lr_scheduler.state_dict()
@@ -214,12 +204,6 @@ def val(epoch):
             dist_loss = output['dist_loss']
             reg_loss = output['reg_loss']
             loss = output['loss']
-            # if isinstance(net, torch.nn.DataParallel):
-            #     seg_loss = seg_loss.sum()
-            #     var_loss = var_loss.sum()
-            #     dist_loss = dist_loss.sum()
-            #     reg_loss = reg_loss.sum()
-            #     loss = output['loss'].sum()
 
             # visualize validation every 5 frame, 50 frames in all
             gap_num = 5
@@ -302,10 +286,7 @@ def main():
     global best_val_loss
     if args.resume:
         save_dict = torch.load(os.path.join(exp_dir, exp_dir.split('/')[-1] + '.pth'))
-        if isinstance(net, torch.nn.DataParallel):
-            net.module.load_state_dict(save_dict['net'])
-        else:
-            net.load_state_dict(save_dict['net'])
+        net.load_state_dict(save_dict['net'])
         optimizer.load_state_dict(save_dict['optim'])
         lr_scheduler.load_state_dict(save_dict['lr_scheduler'])
         start_epoch = save_dict['epoch'] + 1
