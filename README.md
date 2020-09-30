@@ -14,7 +14,7 @@ python demo_test.py -i path/to/img
 ```
 Contoh:
 ```Bash
-python demo_test.py -i demo/demo.jpg -w experiments/exp10/exp10_best.pth -b 0.5 [--visualize / -v]
+python demo_test.py -i demo/demo.jpg -w experiments/exp10/exp10_best.pth -b 1.5 -v
 ```
 
 ![](demo/demo_result.jpg "demo_result")
@@ -31,7 +31,7 @@ python predict_video.py -v path/to/video
 ```
 Contoh:
 ```Bash
-python predict_video.py -i demo/demo.mp4 -w experiments/exp10/exp10_best.pth -b 0.5 -o experiments/exp10/
+python predict_video.py -i demo/demo.mp4 -w experiments/exp10/exp10_best.pth -b 1.5 -o experiments/exp10/
 ```
 
 ![](demo/demo_video_result.mp4 "demo_result")
@@ -87,7 +87,7 @@ Kode dan file python menyusul
 3. Start training:
 
    ```python
-   python train.py [-r]
+   python train.py -r
    ```
 
 4. Monitor on tensorboard:

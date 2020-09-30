@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--video_path", '-v', type=str, help="Path to video")
     parser.add_argument("--weight_path", '-w', type=str, help="Path to model weights")
-    parser.add_argument("--band_width", '-b', type=float, default=0.5, help="Value of delta_v")
+    parser.add_argument("--band_width", '-b', type=float, default=1.5, help="Value of delta_v")
     parser.add_argument("--output_path", '-o', type=str, help="Path to output result")
     args = parser.parse_args()
     return args
