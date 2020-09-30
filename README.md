@@ -1,6 +1,8 @@
 # LaneNet lane detection in Pytorch
 
-LaneNet is a segmentation-tasked lane detection algorithm, described in [1] "[Towards end-to-end lane detection: an instance segmentation approach](https://arxiv.org/pdf/1802.05591.pdf)" . The key idea of instance segmentation should be referred to [2] "[Semantic instance segmentation with a discriminative loss function](https://arxiv.org/pdf/1708.02551.pdf)". This repository contains a re-implementation in Pytorch.
+LaneNet algiritma deteksi jalur, dijelaskan pada [1] "[Towards end-to-end lane detection: an instance segmentation approach](https://arxiv.org/pdf/1802.05591.pdf)" . Ide pokok dari instance segmentation merujuk pada [2] "[Semantic instance segmentation with a discriminative loss function](https://arxiv.org/pdf/1708.02551.pdf)".
+
+Repositori ini adalah implementasi ulang menggunakan pytorch dan modifikasi dari kode sumber [LaneNet](https://github.com/harryhan618/LaneNet)
 
 ## Packages & Softwares
 
@@ -18,7 +20,7 @@ LaneNet is a segmentation-tasked lane detection algorithm, described in [1] "[To
 
 ## Demo Test
 
-For single image demo test:
+Untuk test satu gambar:
 
 ```Bash
 python demo_test.py -i path/to/img 
@@ -35,7 +37,7 @@ python demo_test.py -i demo/demo.jpg -w experiments/exp10/exp10_best.pth -b 1.5 
 
 ## Predict Video
 
-For single image demo test:
+Untuk test video:
 
 ```Bash
 python predict_video.py -v path/to/video
@@ -87,7 +89,7 @@ My_dataset_path
    **Note**
    - Nama folder `My_dataset_path` boleh diganti apa saja sesuai keinginan/keperluan.
 
-2. Konvert `label.json` ke format label tusimple
+2. Ubah `label.json` ke format label tusimple
    ```Bash
    python data_prep/convert_json_via_tusimple.py --json_path path/to/json/file
                                                  --save_samples (True/False default is False)
@@ -97,8 +99,8 @@ My_dataset_path
    python data_prep/convert_json_via_tusimple.py --json_path data/project_data/label_via_project.json --save_samples False
    ```
 
-3. Edit `config.py` 
-   Edit path pada bagian Tusimple sesuai dengan path yg sebelumnya telah dibuat 
+3. Modifikasi `config.py` 
+   Modifikasi path pada bagian Tusimple sesuai dengan path yg sebelumnya telah dibuat 
    ```
    Dataset_Path = dict(
        ...
@@ -108,7 +110,7 @@ My_dataset_path
 
 ## Train 
 
-1. Buat folder experiment di dalam folder `experiments`, misal `experiments/exp12`.  Assign the path to variable `exp_dir` in `train.py`.
+1. Buat folder experiment di dalam folder `experiments`, misal `experiments/exp12`.
 
 2. Copy `cfg.json` yang ada di folder experiment sebelumnya dan paste ke dalam foldr experiment yang baru. Kemudian modifikasi parameter yang ada di `cfg.json`.
    ```json
