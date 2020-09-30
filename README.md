@@ -95,8 +95,9 @@ My_dataset_path
    ```json
    {
     "dataset": {
-               "resize_shape": [640, 360], 
-               "dataset_name": "Tusimple", "batch_size": 2
+               "resize_shape": [640, 360],
+               "dataset_name": "Tusimple",
+               "batch_size": 2 
                },
     "device": "cuda:0",
     "net": {
@@ -116,12 +117,12 @@ My_dataset_path
 
 3. Start training:
 
-   ```python
+   ```Bash
    python train.py --exp_dir ./experiments/exp-keN
                    [--resume / -r] (kosongkan jika mulai dari awal)
    ```
    contoh
-   ```python
+   ```Bash
    python train.py --exp_dir ./experiments/exp12
    ```
 
@@ -135,6 +136,12 @@ My_dataset_path
    tensorboard --logdir_sec exp0:experiments/exp0/log,exp1:experiments/exp1/log,exp2:experiments/exp2/log,...
    ```
 
+## Evaluate
+Untuk mengevaluasi salah satu model terbaik dari beberapa experiment
+
+```Bash
+python evaluate.py --exp_dir ./experiments/exp5
+```
 
 ## Reference
 
