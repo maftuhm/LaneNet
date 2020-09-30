@@ -25,9 +25,9 @@ For single image demo test:
 
 ```Bash
 python predict_video.py -v path/to/video
-						-w path/to/weight
-						-b band_width
-						-o path/to/folder/output
+                        -w path/to/weight
+                        -b band_width
+                        -o path/to/folder/output
 ```
 Contoh:
 ```Bash
@@ -50,10 +50,10 @@ My_dataset_path
 #### Membuat dataset dari video
 
 ```Bash
-python create_clips_dataset.py 	--src_dir path/to/store/dataset
-								--video_path path/to/video/source
-								-fps 30 (setting berapa frame yg akan diambil per detik)
-								-fpd 20 (setting berapa frame yg akan disimpan per folder)
+python create_clips_dataset.py --src_dir path/to/store/dataset
+                               --video_path path/to/video/source
+                               -fps 30 (setting berapa frame yg akan diambil per detik)
+                               -fpd 20 (setting berapa frame yg akan disimpan per folder)
 ```
 Contoh:
 ```Bash
@@ -87,8 +87,8 @@ Kode dan file python menyusul
 3. Start training:
 
    ```python
-   python train.py 	--exp_dir ./experiments/exp-keN
-   					[--resume / -r] (kosongkan jika mulai dari awal)
+   python train.py --exp_dir ./experiments/exp-keN
+                   [--resume / -r] (kosongkan jika mulai dari awal)
    ```
    contoh
    ```python
