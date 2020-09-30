@@ -24,10 +24,10 @@ python demo_test.py -i demo/demo.jpg -w experiments/exp10/exp10_best.pth -b 1.5 
 For single image demo test:
 
 ```Bash
-python predict_video.py -v path/to/video 
-                    -w path/to/weight
-                    -b band_width
-                    -o path/to/folder/output
+python predict_video.py -v path/to/video
+						-w path/to/weight
+						-b band_width
+						-o path/to/folder/output
 ```
 Contoh:
 ```Bash
@@ -51,9 +51,9 @@ My_dataset_path
 
 ```Bash
 python create_clips_dataset.py 	--src_dir path/to/store/dataset
-			                    --video_path path/to/video/source
-                    			-fps 30 (setting berapa frame yg akan diambil per detik)
-                    			-fpd 20 (setting berapa frame yg akan disimpan per folder)
+								--video_path path/to/video/source
+								-fps 30 (setting berapa frame yg akan diambil per detik)
+								-fpd 20 (setting berapa frame yg akan disimpan per folder)
 ```
 Contoh:
 ```Bash
@@ -80,14 +80,19 @@ Kode dan file python menyusul
 
 ## Train 
 
-1. Specify an experiment directory, e.g. `experiments/exp0`.  Assign the path to variable `exp_dir` in `train.py`.
+1. Buat folder experiment di dalam folder `experiments`, misal `experiments/exp12`.  Assign the path to variable `exp_dir` in `train.py`.
 
-2. Modify the hyperparameters in `experiments/exp0/cfg.json`.
+2. Copy `cfg.json` yang ada di folder experiment sebelumnya dan paste ke dalam foldr experiment yang baru. Kemudian modifikasi parameter yang ada di `cfg.json`.
 
 3. Start training:
 
    ```python
-   python train.py -r
+   python train.py 	--exp_dir ./experiments/exp-keN
+   					[--resume / -r] (kosongkan jika mulai dari awal)
+   ```
+   contoh
+   ```python
+   python train.py --exp_dir ./experiments/exp12 -r
    ```
 
 4. Monitor on tensorboard:
