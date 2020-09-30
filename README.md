@@ -49,43 +49,43 @@ My_dataset_path
 ```
 ### Membuat dataset dari video
 
-```Bash
-python create_clips_dataset.py --src_dir path/to/store/dataset
-                               --video_path path/to/video/source
-                               -fps 30 (setting berapa frame yg akan diambil per detik)
-                               -fpd 20 (setting berapa frame yg akan disimpan per folder)
-```
-Contoh:
-```Bash
-python create_clips_dataset.py --src_dir data/project_data --video_path /data/documents/video.mp4 -fps 30 -fpd 20
-```
+1. Jalan kan perintah berikut
+   ```Bash
+   python create_clips_dataset.py --src_dir path/to/store/dataset
+                                  --video_path path/to/video/source
+                                  -fps 30 (setting berapa frame yg akan diambil per detik)
+                                  -fpd 20 (setting berapa frame yg akan disimpan per folder)
+   ```
+   Contoh:
+   ```Bash
+   python create_clips_dataset.py --src_dir data/project_data --video_path /data/documents/video.mp4 -fps 30 -fpd 20
+   ```
 
-Hasil outputnya adalah
-```
-My_dataset_path
-├── clips
-└── labelling
-```
-Berikutnya adalah melabeli dengan vgg anotator, dapat di download di "[VGG Image Annotator (VIA)
-](http://www.robots.ox.ac.uk/~vgg/software/via)". Kemudian simpan semua label `json` di folder `My_dataset_path`.
+   Hasil outputnya adalah
+   ```
+   My_dataset_path
+   ├── clips
+   └── labelling
+   ```
+   Berikutnya adalah melabeli dengan vgg anotator, dapat di download di "[VGG Image Annotator (VIA)
+   ](http://www.robots.ox.ac.uk/~vgg/software/via)". Kemudian simpan semua label `json` di folder `My_dataset_path`.
 
-**Note**
-- Nama folder `My_dataset_path` boleh diganti apa saja sesuai keinginan/keperluan.
+   **Note**
+   - Nama folder `My_dataset_path` boleh diganti apa saja sesuai keinginan/keperluan.
 
-### Konvert `label.json` ke format label tusimple
+2. Konvert `label.json` ke format label tusimple
+   ```
+   Kode dan file python menyusul
+   ```
 
-```
-Kode dan file python menyusul
-```
-
-### Edit `config.py` 
-Edit path pada bagian Tusimple sesuai dengan path yg sebelumnya telah dibuat 
-```
-Dataset_Path = dict(
-    ...
-    Tusimple = "/home/lion/Dataset/tusimple"
-)
-```
+3. Edit `config.py` 
+   Edit path pada bagian Tusimple sesuai dengan path yg sebelumnya telah dibuat 
+   ```
+   Dataset_Path = dict(
+       ...
+       Tusimple = "/home/lion/Dataset/tusimple"
+   )
+   ```
 
 ## Train 
 
