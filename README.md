@@ -17,7 +17,6 @@ Contoh:
 python demo_test.py -i demo/demo.jpg -w experiments/exp10/exp10_best.pth -b 0.5 [--visualize / -v]
 ```
 
-An untested model can be downloaded [here].  (It will be uploaded soon.)
 ![](demo/demo_result.jpg "demo_result")
 
 ## Predict Video
@@ -34,6 +33,8 @@ Contoh:
 ```Bash
 python predict_video.py -i demo/demo.mp4 -w experiments/exp10/exp10_best.pth -b 0.5 -o experiments/exp10/
 ```
+
+![](demo/demo_video_result.mp4 "demo_result")
 
 ## Persiapan data
 
