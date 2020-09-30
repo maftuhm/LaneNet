@@ -38,7 +38,7 @@ python predict_video.py -i demo/demo.mp4 -w experiments/exp10/exp10_best.pth -b 
 
 ## Persiapan data
 
-### Membuat dataset sendiri
+## Membuat dataset sendiri
 Dataset yang dibuat mengikuti format tusimple ya itu sebagai berikut
 ```
 My_dataset_path
@@ -47,7 +47,7 @@ My_dataset_path
 ├── label_val.json
 └── label_test.json
 ```
-#### Membuat dataset dari video
+### Membuat dataset dari video
 
 ```Bash
 python create_clips_dataset.py --src_dir path/to/store/dataset
@@ -72,10 +72,19 @@ Berikutnya adalah melabeli dengan vgg anotator, dapat di download di "[VGG Image
 **Note**
 - Nama folder `My_dataset_path` boleh diganti apa saja sesuai keinginan/keperluan.
 
-#### Konvert label.json ke format label tusimple
+### Konvert label.json ke format label tusimple
 
 ```
 Kode dan file python menyusul
+```
+
+### Edit `config.py` 
+Edit path pada bagian Tusimple sesuai dengan path yg sebelumnya telah dibuat 
+```
+Dataset_Path = dict(
+    ...
+    Tusimple = "/home/lion/Dataset/tusimple"
+)
 ```
 
 ## Train 
@@ -83,6 +92,27 @@ Kode dan file python menyusul
 1. Buat folder experiment di dalam folder `experiments`, misal `experiments/exp12`.  Assign the path to variable `exp_dir` in `train.py`.
 
 2. Copy `cfg.json` yang ada di folder experiment sebelumnya dan paste ke dalam foldr experiment yang baru. Kemudian modifikasi parameter yang ada di `cfg.json`.
+   ```json
+   {
+    "dataset": {
+               "resize_shape": [640, 360], 
+               "dataset_name": "Tusimple", "batch_size": 2
+               },
+    "device": "cuda:0",
+    "net": {
+            "delta_v": 0.5,
+            "delta_d": 3.0,
+            "scale_lane_line": 1.0,
+            "scale_var": 1.0,
+            "scale_dist": 1.0,
+            "scale_reg": 0.001 
+            },
+    "optim": { "lr": 0.0005 },
+    "NUM_EPOCH": 100,
+    "MAX_ITER": 20000
+   }
+
+   ```
 
 3. Start training:
 
