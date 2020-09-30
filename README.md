@@ -2,65 +2,80 @@
 
 LaneNet is a segmentation-tasked lane detection algorithm, described in [1] "[Towards end-to-end lane detection: an instance segmentation approach](https://arxiv.org/pdf/1802.05591.pdf)" . The key idea of instance segmentation should be referred to [2] "[Semantic instance segmentation with a discriminative loss function](https://arxiv.org/pdf/1708.02551.pdf)". This repository contains a re-implementation in Pytorch.
 
-### News
-- Codebase would be updated these days. There are many bugs currently in this repo. Sorry for the late response. 
-
-
-
-## Data preparation
-
-### CULane
-
-The dataset is available in [CULane](https://xingangpan.github.io/projects/CULane.html). Please download and unzip the files in one folder, which later is represented as `CULane_path`.  Then modify the path of `CULane_path` in `config.py`.
-```
-CULane_path
-├── driver_100_30frame
-├── driver_161_90frame
-├── driver_182_30frame
-├── driver_193_90frame
-├── driver_23_30frame
-├── driver_37_30frame
-├── laneseg_label_w16
-├── laneseg_label_w16_test
-└── list
-```
-
-**Note: absolute path is encouraged.**
-
-
-
-### Tusimple
-The dataset is available in [here](https://github.com/TuSimple/tusimple-benchmark/issues/3). Please download and unzip the files in one folder, which later is represented as `Tusimple_path`. Then modify the path of `Tusimple_path` in `config.py`.
-```
-Tusimple_path
-├── clips
-├── label_data_0313.json
-├── label_data_0531.json
-├── label_data_0601.json
-└── test_label.json
-```
-
-**Note:  seg\_label images and gt.txt, as in CULane dataset format,  will be generated the first time `Tusimple` object is instantiated. It may take time.**
-
-
-
-
-
 ## Demo Test
 
 For single image demo test:
 
 ```Bash
-python demo_test.py -i demo/demo.jpg 
+python demo_test.py -i path/to/img 
                     -w path/to/weight
-                    -b 1.5
+                    -b band_width
                     [--visualize / -v]
+```
+Contoh:
+```Bash
+python demo_test.py -i demo/demo.jpg -w experiments/exp10/exp10_best.pth -b 0.5 [--visualize / -v]
 ```
 
 An untested model can be downloaded [here].  (It will be uploaded soon.)
 ![](demo/demo_result.jpg "demo_result")
 
+## Predict Video
 
+For single image demo test:
+
+```Bash
+python predict_video.py -v path/to/video 
+                    -w path/to/weight
+                    -b band_width
+                    -o path/to/folder/output
+```
+Contoh:
+```Bash
+python predict_video.py -i demo/demo.mp4 -w experiments/exp10/exp10_best.pth -b 0.5 -o experiments/exp10/
+```
+
+## Persiapan data
+
+### Membuat dataset sendiri
+Dataset yang dibuat mengikuti format tusimple ya itu sebagai berikut
+```
+My_dataset_path
+├── clips
+├── label_train.json
+├── label_val.json
+└── label_test.json
+```
+#### Membuat dataset dari video
+
+```Bash
+python create_clips_dataset.py 	--src_dir path/to/store/dataset
+			                    --video_path path/to/video/source
+                    			-fps 30 (setting berapa frame yg akan diambil per detik)
+                    			-fpd 20 (setting berapa frame yg akan disimpan per folder)
+```
+Contoh:
+```Bash
+python create_clips_dataset.py --src_dir data/project_data --video_path /data/documents/video.mp4 -fps 30 -fpd 20
+```
+
+Hasil outputnya adalah
+```
+My_dataset_path
+├── clips
+└── labelling
+```
+Berikutnya adalah melabeli dengan vgg anotator, dapat di download di "[VGG Image Annotator (VIA)
+](http://www.robots.ox.ac.uk/~vgg/software/via)". Kemudian simpan semua label `json` di folder `My_dataset_path`.
+
+**Note**
+- Nama folder `My_dataset_path` boleh diganti apa saja sesuai keinginan/keperluan.
+
+#### Konvert label.json ke format label tusimple
+
+```
+Kode dan file python menyusul
+```
 
 ## Train 
 
@@ -76,17 +91,13 @@ An untested model can be downloaded [here].  (It will be uploaded soon.)
 
 4. Monitor on tensorboard:
 
+   ```Bash
+   tensorboard --logdir experiments/exp0/log
    ```
-   tensorboard --logdir='experiments/exp0' > experiments/exp0/board.log 2>&1 &
+   load multiple log tensorboard
+   ```Bash
+   tensorboard --logdir_sec exp0:experiments/exp0/log,exp1:experiments/exp1/log,exp2:experiments/exp2/log,...
    ```
-
-**Note**
-
-
-- My model is trained with `torch.nn.DataParallel`. Modify it according to your hardware configuration.
-
-
-
 
 
 ## Reference
