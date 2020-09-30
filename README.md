@@ -64,14 +64,14 @@ My_dataset_path
 
 1. Jalan kan perintah berikut
    ```Bash
-   python create_clips_dataset.py --src_dir path/to/store/dataset
-                                  --video_path path/to/video/source
-                                  -fps 30 (setting berapa frame yg akan diambil per detik)
-                                  -fpd 20 (setting berapa frame yg akan disimpan per folder)
+   python data_prep/create_clips_dataset.py --src_dir path/to/store/dataset
+                                            --video_path path/to/video/source
+                                            -fps 30 (setting berapa frame yg akan diambil per detik)
+                                            -fpd 20 (setting berapa frame yg akan disimpan per folder)
    ```
    Contoh:
    ```Bash
-   python create_clips_dataset.py --src_dir data/project_data --video_path /data/documents/video.mp4 -fps 30 -fpd 20
+   python data_prep/create_clips_dataset.py --src_dir data/project_data --video_path /data/documents/video.mp4 -fps 30 -fpd 20
    ```
 
    Hasil outputnya adalah
@@ -87,8 +87,13 @@ My_dataset_path
    - Nama folder `My_dataset_path` boleh diganti apa saja sesuai keinginan/keperluan.
 
 2. Konvert `label.json` ke format label tusimple
+   ```Bash
+   python data_prep/convert_json_via_tusimple.py --json_path path/to/json/file
+                                                 --save_samples (True/False default is False)
    ```
-   Kode dan file python menyusul
+   Contoh:
+   ```Bash
+   python data_prep/convert_json_via_tusimple.py --json_path data/project_data/label_via_project.json --save_samples False
    ```
 
 3. Edit `config.py` 
