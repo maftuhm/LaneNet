@@ -136,15 +136,14 @@ My_dataset_path
    ```
    **Deskripsi**
    - `dataset`:
-            - `resize_shape`: ukuran gambar yang akan dimasukkan ke pelatihan model
-            - `dataset_name`: type dataset yg akan di load. dalam kasus ini adalah tusimple. karena format dataset yg dibuat mengikuti format tusimple
-            - `batch_size`: ukuran batch, adalah jumlah gambar yg di load setiap iterasi
+      - `resize_shape`: ukuran gambar yang akan dimasukkan ke pelatihan model
+      - `dataset_name`: type dataset yg akan di load. dalam kasus ini adalah tusimple. karena format dataset yg dibuat mengikuti format tusimple
+      - `batch_size`: ukuran batch, adalah jumlah gambar yg di load setiap iterasi
    - `device`: adalah penentuan cpu atau gpu yang akan digunakan untuk pelatihan model
    - `net`: parameter yg ada di net mengikuti kedua jurnal. untuk penjelasannya bisa dilihat di jurnal
-   - `optim`: parameter untuk optimizer.
-            karena dalam beberapa experiment menggunakan dua optimizer yg berbeda. maka untuk memebedakannya adalah: 
-            - jika parameter di dalam optim ada dua yaitu `lr` dan `momentum` maka optimizer yg digunakan adalah SGD
-            - jika paremater di dalam optim hanya ada satu yaitu `lr` saja maka optimizer yg digunakan adalah Adam
+   - `optim`: parameter untuk optimizer. karena dalam beberapa experiment menggunakan dua optimizer yg berbeda. maka untuk memebedakannya adalah:
+      - jika parameter di dalam optim ada dua yaitu `lr` dan `momentum` maka optimizer yg digunakan adalah SGD
+      - jika paremater di dalam optim hanya ada satu yaitu `lr` saja maka optimizer yg digunakan adalah Adam
 
     **Note**
     Setiap experiment memiliki setting parameter yg berbeda
