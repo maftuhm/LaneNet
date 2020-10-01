@@ -98,6 +98,8 @@ My_dataset_path
    ```Bash
    python data_prep/convert_json_via_tusimple.py --json_path data/project_data/label_via_project.json --save_samples False
    ```
+   **Note**
+   Hasil konversi dalam tahap ini, data belum dibagi menjadi train dan val. untuk membaginya bisa dibagi secara menaual atau menggunakan kode python
 
 3. Modifikasi `config.py` 
    Modifikasi path pada bagian Tusimple sesuai dengan path yg sebelumnya telah dibuat 
@@ -141,12 +143,12 @@ My_dataset_path
       - `batch_size`: ukuran batch, adalah jumlah gambar yg di load setiap iterasi
    - `device`: adalah penentuan cpu atau gpu yang akan digunakan untuk pelatihan model
    - `net`: parameter yg ada di net mengikuti kedua jurnal. untuk penjelasannya bisa dilihat di jurnal
-   - `optim`: parameter untuk optimizer. karena dalam beberapa experiment menggunakan dua optimizer yg berbeda. maka untuk memebedakannya adalah:
+   - `optim`: parameter untuk optimizer. karena dalam beberapa experiment menggunakan dua optimizer yg berbeda. maka untuk membedakannya adalah:
       - jika parameter di dalam optim ada dua yaitu `lr` dan `momentum` maka optimizer yg digunakan adalah SGD
       - jika paremater di dalam optim hanya ada satu yaitu `lr` saja maka optimizer yg digunakan adalah Adam
 
     **Note**
-    Setiap experiment memiliki setting parameter yg berbeda
+    Setiap experiment memiliki nilai parameter yg berbeda
 
 3. Start training:
 
