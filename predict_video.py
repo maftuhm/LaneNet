@@ -99,12 +99,12 @@ def predict_image(image_frame):
         for l in lane_coords:
             l = [(x, y) for (x, y) in l if x >= 0 and y >= 0]
             for pt in l:
-                cv2.circle(img, pt, radius=5, color=(0, 0, 255), thickness=-1)
-        img_output = img
+                cv2.circle(image_frame, pt, radius=5, color=(0, 0, 255), thickness=-1)
+        img_output = image_frame
 
     elif kind_line == 'seg':
-        # seg_img = transform_img_ori({'img': seg_img})['img']
-        img_output = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=img, beta=1., gamma=0.)
+        seg_img = transform_img_ori({'img': seg_img})['img']
+        img_output = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=image_frame, beta=1., gamma=0.)
 
     else:
         img_output = img
