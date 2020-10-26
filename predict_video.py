@@ -97,6 +97,8 @@ def predict_image(image_frame):
 
     if kind_line == 'dot':
         for l in lane_coords:
+            if len(l) == 0:
+                continue
             l = [(x, y) for (x, y) in l if x >= 0 and y >= 0]
             for pt in l:
                 cv2.circle(image_frame, pt, radius=5, color=(0, 0, 255), thickness=-1)
