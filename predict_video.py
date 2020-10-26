@@ -75,14 +75,17 @@ def predict_image(image_frame):
     json_dict['h_sample'] = []
     json_dict['raw_file'] = '' # video_src
     json_dict['run_time'] = 0
-    for l in lane_coords:
-        if len(l) == 0:
-            continue
-        json_dict['lanes'].append([])
-        for (x, y) in l:
-            json_dict['lanes'][-1].append(int(x))
-    for (x, y) in lane_coords[0]:
-        json_dict['h_sample'].append(y)
+
+    if len(lane_coords) != 0:
+        for l in lane_coords:
+            if len(l) == 0:
+                continue
+            json_dict['lanes'].append([])
+            for (x, y) in l:
+                json_dict['lanes'][-1].append(int(x))
+
+        for (x, y) in lane_coords[0]:
+            json_dict['h_sample'].append(y)
 
     lanes_loc = []
     for i, lane_idx in enumerate(np.unique(lane_seg_img)):
@@ -90,10 +93,6 @@ def predict_image(image_frame):
             continue
         seg_img[lane_seg_img == lane_idx] = color[i-1]
         lanes_loc.append(np.where(lane_seg_img == lane_idx))
-
-    lanes_coordinates = []
-    for lane_loc in lanes_loc:
-        lanes_coordinates.append(list(zip(lane_loc[0], lane_loc[1])))
 
     if kind_line == 'dot':
         for l in lane_coords:
