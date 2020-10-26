@@ -47,7 +47,7 @@ python predict_video.py -v path/to/video
 ```
 Contoh:
 ```Bash
-python predict_video.py -i demo/demo.mp4 -w experiments/exp10/exp10_best.pth -b 1.5 -o experiments/exp10/
+python predict_video.py -v demo/demo.mp4 -w experiments/exp10/exp10_best.pth -b 1.5 -o experiments/exp10/
 ```
 
 ![](demo/demo_video_result.mp4 "demo_result")
