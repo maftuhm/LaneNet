@@ -54,7 +54,7 @@ def main():
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     seg_img = np.zeros_like(img)
     lane_seg_img = embedding_post_process(embedding, bin_seg_pred, args.band_width, 4)
-    lane_coords = getLane.polyfit2coords_tusimple(lane_seg_img, resize_shape=(360, 640), y_px_gap=10, pts=56)
+    lane_coords = getLane.polyfit2coords_tusimple(lane_seg_img, resize_shape=(1080, 1920), y_px_gap=10, pts=56)
     for i in range(len(lane_coords)):
         lane_coords[i] = sorted(lane_coords[i], key=lambda pair: pair[1])
 
@@ -89,12 +89,11 @@ def main():
         for l in lane_coords:
             l = [(x, y) for (x, y) in l if x >= 0 and y >= 0]
             for pt in l:
-                cv2.circle(img, pt, radius=5, color=(0, 0, 255), thickness=-1)
-        img_ori = img
+                cv2.circle(img_ori, pt, radius=5, color=(0, 0, 255), thickness=-1)
 
     elif kind_line == 'seg':
-        # seg_img = transform_img_ori({'img': seg_img})['img']
-        img_ori = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=img, beta=1., gamma=0.)
+        seg_img = transform_img_ori({'img': seg_img})['img']
+        img_ori = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=seg_img, beta=1., gamma=0.)
 
     else:
         img_ori = img

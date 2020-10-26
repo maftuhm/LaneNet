@@ -34,7 +34,7 @@ net = net.to(device)
 
 vidcap = cv2.VideoCapture(video_src)
 total_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
-size_video = (640, 360) # (1920, 1080)
+size_video = (1920, 1080)
 out = cv2.VideoWriter(os.path.join(output_path, video_name + '_output.avi'), cv2.VideoWriter_fourcc(*'DIVX'), 30, size_video)
 
 _set = "IMAGENET"
@@ -66,7 +66,7 @@ def predict_image(image_frame):
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     seg_img = np.zeros_like(img)
     lane_seg_img = embedding_post_process(embedding, bin_seg_pred, args.band_width, 4)
-    lane_coords = getLane.polyfit2coords_tusimple(lane_seg_img, resize_shape=(360, 640), y_px_gap=10, pts=56)
+    lane_coords = getLane.polyfit2coords_tusimple(lane_seg_img, resize_shape=(size_video[1], size_video[0]), y_px_gap=10, pts=56)
     for i in range(len(lane_coords)):
         lane_coords[i] = sorted(lane_coords[i], key=lambda pair: pair[1])
 
