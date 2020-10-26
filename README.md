@@ -26,11 +26,12 @@ Untuk test satu gambar:
 python demo_test.py -i path/to/img 
                     -w path/to/weight
                     -b band_width
+                    -l dot or seg
                     [--visualize / -v]
 ```
 Contoh:
 ```Bash
-python demo_test.py -i demo/demo.jpg -w experiments/exp10/exp10_best.pth -b 1.5 -v
+python demo_test.py -i demo/demo.jpg -w experiments/exp10/exp10_best.pth -b 1.5 -l dot -v
 ```
 
 ![](demo/demo_result.jpg "demo_result")
@@ -43,11 +44,12 @@ Untuk test video:
 python predict_video.py -v path/to/video
                         -w path/to/weight
                         -b band_width
+                        -l dot or seg
                         -o path/to/folder/output
 ```
 Contoh:
 ```Bash
-python predict_video.py -v demo/demo.mp4 -w experiments/exp10/exp10_best.pth -b 1.5 -o experiments/exp10/
+python predict_video.py -v demo/demo.mp4 -w experiments/exp10/exp10_best.pth -b 1.5 -l dot -o experiments/exp10/
 ```
 
 ![](demo/demo_video_result.mp4 "demo_result")
