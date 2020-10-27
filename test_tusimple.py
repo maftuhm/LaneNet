@@ -17,7 +17,7 @@ from utils.prob2lines import getLane
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp_dir", type=str, default="./experiments/exp50")
+    parser.add_argument("--exp_dir", type=str, default="./experiments/exp10")
     args = parser.parse_args()
     return args
 
@@ -29,7 +29,7 @@ exp_name = exp_dir.split('/')[-1]
 with open(os.path.join(exp_dir, "cfg.json")) as f:
     exp_cfg = json.load(f)
 resize_shape = tuple(exp_cfg['dataset']['resize_shape'])
-device = torch.device('cuda')
+device = torch.device('cuda:0')
 
 
 def split_path(path):
@@ -53,10 +53,10 @@ transform = Compose(Resize(resize_shape), ToTensor(),
                     Normalize(mean=mean, std=std))
 dataset_name = exp_cfg['dataset'].pop('dataset_name')
 Dataset_Type = getattr(dataset, dataset_name)
-test_dataset = Dataset_Type(Dataset_Path['Tusimple'], "test", transform)
-test_loader = DataLoader(test_dataset, batch_size=32, collate_fn=test_dataset.collate, num_workers=4)
+test_dataset = Dataset_Type(Dataset_Path['Tusimple'], "val", transform)
+test_loader = DataLoader(test_dataset, batch_size=exp_cfg['dataset']['batch_size'], collate_fn=test_dataset.collate, num_workers=0, pin_memory=True)
 
-net = LaneNet(pretrained=True, **exp_cfg['model'])
+net = LaneNet(pretrained=True, **exp_cfg['net'])
 save_name = os.path.join(exp_dir, exp_dir.split('/')[-1] + '_best.pth')
 save_dict = torch.load(save_name, map_location='cpu')
 print("\nloading", save_name, "...... From Epoch: ", save_dict['epoch'])
@@ -81,7 +81,7 @@ with torch.no_grad():
 
         output = net(img)
         embedding = output['embedding']
-        binary_seg = output['seg_lane_line_pred']
+        binary_seg = output['binary_seg']
         embedding = embedding.detach().cpu().numpy()
         binary_seg = binary_seg.detach().cpu().numpy()
         for b in range(len(binary_seg)):
@@ -91,7 +91,7 @@ with torch.no_grad():
             bin_seg_b = np.argmax(bin_seg_b, axis=0)
             lane_seg_img = embedding_post_process(embed_b, bin_seg_b, 1.5)
 
-            lane_coords = getLane.polyfit2coords_tusimple(lane_seg_img, resize_shape=(720, 1280), y_px_gap=10, pts=56)
+            lane_coords = getLane.polyfit2coords_tusimple(lane_seg_img, resize_shape=(resize_shape[1], resize_shape[0]), y_px_gap=10, pts=56)
             for i in range(len(lane_coords)):
                 lane_coords[i] = sorted(lane_coords[i], key=lambda pair: pair[1])
 
@@ -112,7 +112,7 @@ with torch.no_grad():
             json_dict = {}
             json_dict['lanes'] = []
             json_dict['h_sample'] = []
-            json_dict['raw_file'] = os.path.join(*path_tree[-4:])
+            json_dict['raw_file'] = os.path.join(*path_tree[-3:])
             json_dict['run_time'] = 0
             for l in lane_coords:
                 if len(l) == 0:
@@ -132,12 +132,12 @@ with open(os.path.join(out_path, "predict_test.json"), "w") as f:
         print(line, end="\n", file=f)
 
 # ---- evaluate ----
-from utils.lane_evaluation.tusimple.lane import LaneEval
+# from utils.lane_evaluation.tusimple.lane import LaneEval
 
-eval_result = LaneEval.bench_one_submit(os.path.join(out_path, "predict_test.json"),
-                                        "/home/lion/Dataset/tusimple/test_label.json")
-print(eval_result)
-with open(os.path.join(evaluation_path, "evaluation_result.txt"), "w") as f:
-    print(eval_result, file=f)
+# eval_result = LaneEval.bench_one_submit(os.path.join(out_path, "predict_test.json"),
+#                                         "/home/lion/Dataset/tusimple/test_label.json")
+# print(eval_result)
+# with open(os.path.join(evaluation_path, "evaluation_result.txt"), "w") as f:
+#     print(eval_result, file=f)
 
 

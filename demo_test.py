@@ -4,6 +4,8 @@ from config import *
 from model import LaneNet
 from utils.transforms import *
 from utils.postprocess import *
+from utils.prob2lines import getLane
+import os, json
 
 
 def parse_args():
@@ -11,6 +13,7 @@ def parse_args():
     parser.add_argument("--img_path", '-i', type=str, help="Path to demo img")
     parser.add_argument("--weight_path", '-w', type=str, help="Path to model weights")
     parser.add_argument("--band_width", '-b', type=float, default=1.5, help="Value of delta_v")
+    parser.add_argument("--line", '-l', type=str, default='dot', help="Kind of line segmentation or dots")
     parser.add_argument("--visualize", '-v', action="store_true", default=False, help="Visualize the result")
     args = parser.parse_args()
     return args
@@ -20,6 +23,7 @@ def main():
     args = parse_args()
     img_path = args.img_path
     weight_path = args.weight_path
+    kind_line = args.line
 
     _set = "IMAGENET"
     mean = IMG_MEAN[_set]
@@ -50,6 +54,25 @@ def main():
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     seg_img = np.zeros_like(img)
     lane_seg_img = embedding_post_process(embedding, bin_seg_pred, args.band_width, 4)
+    lane_coords = getLane.polyfit2coords_tusimple(lane_seg_img, resize_shape=(1080, 1920), y_px_gap=10, pts=56)
+    for i in range(len(lane_coords)):
+        lane_coords[i] = sorted(lane_coords[i], key=lambda pair: pair[1])
+
+    json_dict = {}
+    json_dict['lanes'] = []
+    json_dict['h_sample'] = []
+    json_dict['raw_file'] = img_path
+    json_dict['run_time'] = 0
+
+    if len(lane_coords) != 0:
+        for l in lane_coords:
+            if len(l) == 0:
+                continue
+            json_dict['lanes'].append([])
+            for (x, y) in l:
+                json_dict['lanes'][-1].append(int(x))
+        for (x, y) in lane_coords[0]:
+            json_dict['h_sample'].append(y)
 
     color = np.array([[255, 125, 0], [0, 255, 0], [0, 0, 255], [0, 255, 255]], dtype='uint8')
 
@@ -60,14 +83,24 @@ def main():
         seg_img[lane_seg_img == lane_idx] = color[i-1]
         lanes_loc.append(np.where(lane_seg_img == lane_idx))
 
-    lanes_coordinates = []
-    for lane_loc in lanes_loc:
-        lanes_coordinates.append(list(zip(lane_loc[0], lane_loc[1])))
+    if kind_line == 'dot':
+        for l in lane_coords:
+            if len(l) == 0:
+                continue
+            l = [(x, y) for (x, y) in l if x >= 0 and y >= 0]
+            for pt in l:
+                cv2.circle(img_ori, pt, radius=5, color=(0, 0, 255), thickness=-1)
 
-    seg_img = transform_img_ori({'img': seg_img})['img']
-    img_ori = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=img_ori, beta=1., gamma=0.)
+    elif kind_line == 'seg':
+        seg_img = transform_img_ori({'img': seg_img})['img']
+        img_ori = cv2.addWeighted(src1=seg_img, alpha=0.8, src2=seg_img, beta=1., gamma=0.)
+
+    else:
+        img_ori = img
 
     cv2.imwrite("demo/demo_result.jpg", img_ori)
+    with open(os.path.join('demo', "demo_result.json"), "w") as f:
+        print(json.dumps(json_dict), file=f)
 
     if args.visualize:
         cv2.imshow("", img_ori)
