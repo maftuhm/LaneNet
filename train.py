@@ -20,7 +20,7 @@ from utils.postprocess import embedding_post_process
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp_dir", type=str, default="./experiments/exp11")
+    parser.add_argument("--exp_dir", type=str, default="./experiments/exp13")
     parser.add_argument("--resume", "-r", action="store_true")
     args = parser.parse_args()
     return args
@@ -62,8 +62,11 @@ val_loader = DataLoader(val_dataset, batch_size=exp_cfg['dataset']['batch_size']
 net = LaneNet(pretrained=True, **exp_cfg['net'])
 net = net.to(device)
 
-# optimizer = optim.SGD(net.parameters(), **exp_cfg['optim'])
-optimizer = optim.Adam(net.parameters(), **exp_cfg['optim'])
+if 'momentum' in exp_cfg['optim']:
+    optimizer = optim.SGD(net.parameters(), **exp_cfg['optim'])
+else:
+    optimizer = optim.Adam(net.parameters(), **exp_cfg['optim'])
+
 lr_scheduler = PolyLR(optimizer, 0.9, exp_cfg['MAX_ITER'])
 best_val_loss = 1e6
 
